@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient'; // Adjust path as needed
+import React, { useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 
 const UpdatePassword: React.FC = () => {
   const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false); // State to handle password visibility
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -26,7 +27,7 @@ const UpdatePassword: React.FC = () => {
       }
 
       setMessage('Password updated successfully! You will be redirected to the login page.');
-      
+
       // Redirect after password update
       setTimeout(() => {
         router.push('/login');
@@ -37,28 +38,57 @@ const UpdatePassword: React.FC = () => {
   };
 
   return (
-    <div>
-      <Head>
-        <title>Update Password</title>
-      </Head>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 font-mono p-4">
+      <div className="w-full max-w-md bg-white shadow-2xl rounded-lg overflow-hidden">
+        <div className="p-8">
+          <Head>
+            <title>Update Password</title>
+          </Head>
+          <h1 className="text-3xl font-bold mb-6 text-black text-center">Update Password</h1>
+          
+          <form onSubmit={handleUpdatePassword} className="space-y-6">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+                Enter your new password:
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}  // Toggle between text and password types
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white text-black"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}  // Toggle the showPassword state
+                  className="absolute right-3 top-2 text-sm text-blue-500"
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 transition duration-200"
+            >
+              Update Password
+            </button>
+          </form>
 
-      <h1>Update Password</h1>
-
-      <form onSubmit={handleUpdatePassword}>
-        <label>
-          Enter your new password:
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </label>
-        <button type="submit">Update Password</button>
-      </form>
-
-      {message && <p className="text-green-500">{message}</p>}
-      {error && <p className="text-red-500">{error}</p>}
+          {message && (
+            <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+              {message}
+            </div>
+          )}
+          {error && (
+            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

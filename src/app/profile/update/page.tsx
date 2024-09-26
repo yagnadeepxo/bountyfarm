@@ -9,7 +9,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import 'dotenv/config';
-require('dotenv').config()
+require('dotenv').config();
 
 const profileSchema = z.object({
   username: z.string().min(3, { message: 'Username must be at least 3 characters long' }),
@@ -49,8 +49,8 @@ const UpdateProfile: NextPage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token');
-    if(!token){
-      router.push('/login')
+    if (!token) {
+      router.push('/login');
     }
     if (token) {
       const json = JSON.parse(token);
@@ -168,7 +168,14 @@ const UpdateProfile: NextPage = () => {
 
       const { error } = await supabase
         .from('profiles')
-        .update(data)
+        .update({
+          about: data.about,
+          avatar_url: data.avatar_url,
+          twitter_url: data.twitter_url,
+          github_url: data.github_url,
+          telegram_url: data.telegram_url,
+          website_url: data.website_url,
+        })
         .eq('id', user.id);
 
       if (error) {
@@ -182,158 +189,167 @@ const UpdateProfile: NextPage = () => {
   };
 
   return (
-    <div>
-      <Head>
-        <title>Update Profile</title>
-      </Head>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 font-mono p-4">
+      <div className="w-full max-w-3xl bg-white shadow-2xl rounded-lg overflow-hidden">
+        <div className="p-8">
+          <h1 className="text-3xl font-bold mb-8 text-black text-center">Update Profile</h1>
+        </div>
 
-      <h1>Update Profile</h1>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div>
-            <Controller
-              name="username"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  Username:
-                  <input {...field} type="text" placeholder="Enter your username" />
-                </label>
-              )}
-            />
-            {errors.username && <p className="text-red-500">{errors.username.message}</p>}
-          </div>
-
-          <div>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  Role:
-                  <input {...field} type="text" placeholder="Enter your role" />
-                </label>
-              )}
-            />
-            {errors.role && <p className="text-red-500">{errors.role.message}</p>}
-          </div>
-
-          <div>
-            <Controller
-              name="about"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  About:
-                  <textarea {...field} placeholder="Tell us about yourself" />
-                </label>
-              )}
-            />
-          </div>
-
-          <div className="my-4">
-            {localAvatarPreview ? (
-              <img
-                src={localAvatarPreview}
-                alt="Local preview"
-                className="w-64 h-64 object-cover rounded-lg mb-4"
-              />
-            ) : imageUrl ? (
-              <img
-                src={imageUrl}
-                alt="Profile Avatar"
-                className="w-64 h-64 object-cover rounded-lg mb-4"
-              />
-            ) : (
-              <div className="w-64 h-64 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-                <p className="text-gray-500">No image uploaded</p>
+        <div className="h-[calc(100vh-16rem)] overflow-y-auto px-8 pb-8">
+          {loading ? (
+            <p className="text-center text-black">Loading...</p>
+          ) : error ? (
+            <p className="text-red-500 text-center">{error}</p>
+          ) : (
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div>
+                <Controller
+                  name="username"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">Username:</span>
+                      <input {...field} type="text" placeholder="Enter your username" disabled
+                        className="mt-1 block w-full rounded-md border-black bg-gray-100 focus:border-gray-500 focus:bg-white focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
               </div>
-            )}
-            <label className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer">
-              {uploading ? 'Uploading...' : 'Upload Image'}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={uploadImage}
-                disabled={uploading}
-                className="hidden"
-              />
-            </label>
-          </div>
 
-          <div>
-            <Controller
-              name="twitter_url"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  Twitter URL:
-                  <input {...field} type="text" placeholder="https://x.com/bitcoin" />
+              <div>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">Role:</span>
+                      <input {...field} type="text" placeholder="Enter your role" disabled
+                        className="mt-1 block w-full rounded-md border-black bg-gray-100 focus:border-gray-500 focus:bg-white focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+                {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>}
+              </div>
+
+              <div>
+                <Controller
+                  name="about"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">About:</span>
+                      <textarea {...field} placeholder="Tell us about yourself"
+                        className="mt-1 block w-full rounded-md border-black focus:border-gray-500 focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+              </div>
+
+              <div className="my-4">
+                {localAvatarPreview ? (
+                  <img
+                    src={localAvatarPreview}
+                    alt="Local preview"
+                    className="w-64 h-64 object-cover rounded-lg mb-4"
+                  />
+                ) : imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt="Profile Avatar"
+                    className="w-64 h-64 object-cover rounded-lg mb-4"
+                  />
+                ) : (
+                  <div className="w-64 h-64 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                    <p className="text-gray-500">No image uploaded</p>
+                  </div>
+                )}
+                <label className="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded cursor-pointer">
+                  {uploading ? 'Uploading...' : 'Upload Image'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={uploadImage}
+                    disabled={uploading}
+                    className="hidden"
+                  />
                 </label>
-              )}
-            />
-            {errors.twitter_url && <p className="text-red-500">{errors.twitter_url.message}</p>}
-          </div>
+              </div>
 
-          <div>
-            <Controller
-              name="github_url"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  GitHub URL:
-                  <input {...field} type="text" placeholder="https://github.com/username" />
-                </label>
-              )}
-            />
-            {errors.github_url && <p className="text-red-500">{errors.github_url.message}</p>}
-          </div>
+              <div>
+                <Controller
+                  name="twitter_url"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">Twitter URL:</span>
+                      <input {...field} type="text" placeholder="https://x.com/bitcoin"
+                        className="mt-1 block w-full rounded-md border-black focus:border-gray-500 focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+                {errors.twitter_url && <p className="text-red-500 text-sm mt-1">{errors.twitter_url.message}</p>}
+              </div>
 
-          <div>
-            <Controller
-              name="telegram_url"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  Telegram URL:
-                  <input {...field} type="text" placeholder="https://t.me/username" />
-                </label>
-              )}
-            />
-            {errors.telegram_url && <p className="text-red-500">{errors.telegram_url.message}</p>}
-          </div>
+              <div>
+                <Controller
+                  name="github_url"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">GitHub URL:</span>
+                      <input {...field} type="text" placeholder="https://github.com/username"
+                        className="mt-1 block w-full rounded-md border-black focus:border-gray-500 focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+                {errors.github_url && <p className="text-red-500 text-sm mt-1">{errors.github_url.message}</p>}
+              </div>
 
-          <div>
-            <Controller
-              name="website_url"
-              control={control}
-              render={({ field }) => (
-                <label>
-                  Website URL:
-                  <input {...field} type="text" placeholder="https://www.example.com" />
-                </label>
-              )}
-            />
-            {errors.website_url && <p className="text-red-500">{errors.website_url.message}</p>}
-          </div>
+              <div>
+                <Controller
+                  name="telegram_url"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">Telegram URL:</span>
+                      <input {...field} type="text" placeholder="https://t.me/username"
+                        className="mt-1 block w-full rounded-md border-black focus:border-gray-500 focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+                {errors.telegram_url && <p className="text-red-500 text-sm mt-1">{errors.telegram_url.message}</p>}
+              </div>
 
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Update Profile
-          </button>
+              <div>
+                <Controller
+                  name="website_url"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="block">
+                      <span className="text-black">Website URL:</span>
+                      <input {...field} type="text" placeholder="https://www.example.com"
+                        className="mt-1 block w-full rounded-md border-black focus:border-gray-500 focus:ring-0 text-black" />
+                    </label>
+                  )}
+                />
+                {errors.website_url && <p className="text-red-500 text-sm mt-1">{errors.website_url.message}</p>}
+              </div>
 
-          {message && <p className="text-green-500 mt-4">{message}</p>}
-        </form>
-      )}
+              <button
+                type="submit"
+                className="w-full bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded transition duration-200"
+              >
+                Update Profile
+              </button>
+
+              {message && <p className="text-green-500 mt-4 text-center">{message}</p>}
+            </form>
+          )}
+        </div>
+      </div>
     </div>
-  );
-};
+  )
+}
 
 export default UpdateProfile;

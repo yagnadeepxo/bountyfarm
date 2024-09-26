@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-
+import Link from 'next/link';
+import Image from 'next/image';
+import { differenceInDays } from 'date-fns'; 
 
 const GigsPage = () => {
   const [gigs, setGigs] = useState<any[]>([]);
@@ -15,14 +17,14 @@ const GigsPage = () => {
 
   const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token');
 
-  if(!token) {
-    router.push('/login')
+  if (!token) {
+    router.push('/login');
   }
 
   useEffect(() => {
     const fetchGigs = async () => {
       try {
-        // Fetch gigs with company info and avatar_url from profiles
+        // Fetch gigs with company info and avatar_url from profiles, ordered by deadline (newest first)
         const { data, error } = await supabase
           .from('gigs')
           .select(`
@@ -32,7 +34,8 @@ const GigsPage = () => {
             total_bounty, 
             deadline,
             business ( avatar_url )
-          `); // Fetch relevant columns with the related profile (business)
+          `)
+          .order('deadline', { ascending: true }); // Order by deadline in descending order
 
         if (error) throw error;
 
@@ -50,38 +53,57 @@ const GigsPage = () => {
   if (loading) return <p>Loading gigs...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
+  // Helper function to calculate remaining days
+  const calculateDueInDays = (deadline: string) => {
+    const currentDate = new Date();
+    const deadlineDate = new Date(deadline);
+    const daysDifference = differenceInDays(deadlineDate, currentDate);
+    return daysDifference >= 0 ? `${daysDifference} days` : 'Expired';
+  };
+
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">All Gigs</h1>
+    <div className="min-h-screen bg-gray-100 font-mono p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 text-black text-center">All Gigs</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {gigs.map((gig) => (
-          <div
-            key={gig.gigid}
-            className="bg-white shadow-md rounded-lg p-4 cursor-pointer hover:shadow-lg transition duration-300"
-            onClick={() => router.push(`/gig/${gig.gigid}`)} // Navigate to /gig/[gigid]
-          >
-            {/* Display avatar image */}
-            <div className="flex items-center mb-4">
-              <img
-                src={
-                  gig.business?.avatar_url
-                    ? `${supabaseUrl}/storage/v1/object/public/avatars/${gig.business.avatar_url}`
-                    : '/bp.jpeg' // Fallback to default image if no avatar
-                }
-                alt="Company Avatar"
-                className="w-12 h-12 rounded-full mr-4"
-              />
-              <div>
-                <h2 className="text-xl font-semibold">{gig.title}</h2>
-                <p className="text-gray-600">{gig.company}</p>
-              </div>
-            </div>
+        {gigs.length === 0 ? (
+          <p className="text-black text-center">No gigs found for your company.</p>
+        ) : (
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {gigs.map((gig) => (
+              <li key={gig.gigid} className="bg-white shadow-lg rounded-lg p-6">
+                <Link href={`/gig/${gig.gigid}`} className="block">
+                  <div className="cursor-pointer">
+                    <h2 className="text-xl font-semibold text-black mb-4">{gig.title}</h2>
+                    <p className="text-gray-600 font-medium mb-4">Company: {gig.company}</p>
 
-            <p className="text-gray-600 mb-2">Total Bounty: ${gig.total_bounty}</p>
-            <p className="text-gray-600">Deadline: {new Date(gig.deadline).toLocaleDateString()}</p>
-          </div>
-        ))}
+                    <div className="flex items-center mb-4">
+                      <Image
+                        src={
+                          gig.business?.avatar_url
+                            ? `${supabaseUrl}/storage/v1/object/public/avatars/${gig.business.avatar_url}`
+                            : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
+                        }
+                        alt="Company Avatar"
+                        width={40}
+                        height={40}
+                        className="rounded-full mr-4"
+                      />
+                    </div>
+
+                    <p className="text-black mb-4">
+                      Due in: 
+                      <strong className='text-black font-bold'>
+                      {calculateDueInDays(gig.deadline)}
+                      </strong>
+                    </p>
+                    <p className="text-black font-bold">Total Bounty: ${gig.total_bounty}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import dynamic from 'next/dynamic'
-import { supabase } from '@/lib/supabaseClient'
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import dynamic from 'next/dynamic';
+import { supabase } from '@/lib/supabaseClient';
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
-import 'react-quill/dist/quill.snow.css'
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import 'react-quill/dist/quill.snow.css';
 
 // Validation schema using Zod
 const gigSchema = z.object({
@@ -26,27 +26,28 @@ const gigSchema = z.object({
     )
     .nonempty('At least one prize is required.'),
   skills_required: z.string()
-})
+});
 
 // Define the type for the form data
-type GigFormData = z.infer<typeof gigSchema>
+type GigFormData = z.infer<typeof gigSchema>;
 
 export default function CreateGigPage() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isChecked, setIsChecked] = useState(false); // For checkbox state
 
-  const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token')
-  let json: any
+  const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token');
+  let json: any;
   if (token) {
-    json = JSON.parse(token)
+    json = JSON.parse(token);
   }
 
-  const businessId = json?.user?.id // Assuming json.user.id is a valid UUID
-  const company = json?.user?.user_metadata?.display_name // Assuming company name is stored in user metadata
+  const businessId = json?.user?.id;
+  const company = json?.user?.user_metadata?.display_name;
 
   if (!businessId || typeof businessId !== 'string') {
-    setErrorMessage('Invalid business ID. Please log in again.')
-    return null // Render nothing if business ID is invalid
+    setErrorMessage('Invalid business ID. Please log in again.');
+    return null;
   }
 
   const {
@@ -59,18 +60,18 @@ export default function CreateGigPage() {
   } = useForm<GigFormData>({
     resolver: zodResolver(gigSchema),
     defaultValues: {
-      bounty_breakdown: [{ place: 1, amount: 0 }] // Initialize with at least one prize
+      bounty_breakdown: [{ place: 1, amount: 0 }]
     }
-  })
+  });
 
-  const watchTotalBounty = watch('total_bounty', 0)
+  const watchTotalBounty = watch('total_bounty', 0);
 
   const onSubmit = async (data: GigFormData) => {
-    const totalBreakdownAmount = data.bounty_breakdown.reduce((acc, curr) => acc + curr.amount, 0)
+    const totalBreakdownAmount = data.bounty_breakdown.reduce((acc, curr) => acc + curr.amount, 0);
 
     if (totalBreakdownAmount !== data.total_bounty) {
-      setErrorMessage('Total breakdown amount must equal the total bounty.')
-      return
+      setErrorMessage('Total breakdown amount must equal the total bounty.');
+      return;
     }
 
     try {
@@ -80,7 +81,7 @@ export default function CreateGigPage() {
           {
             business: businessId,
             title: data.title,
-            company: company, // Use the retrieved company from user metadata
+            company: company,
             type: data.type,
             description: data.description,
             deadline: data.deadline,
@@ -89,16 +90,16 @@ export default function CreateGigPage() {
             skills_required: data.skills_required
           }
         ])
-        .select()
+        .select();
 
-      if (error) throw error
+      if (error) throw error;
 
-      setSuccessMessage('Gig created successfully!')
-      reset() // Reset the form after submission
+      setSuccessMessage('Gig created successfully!');
+      reset();
     } catch (error: any) {
-      setErrorMessage('Error creating gig: ' + error.message)
+      setErrorMessage('Error creating gig: ' + error.message);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-mono p-4">
@@ -194,9 +195,9 @@ export default function CreateGigPage() {
                             type="number"
                             value={item.amount}
                             onChange={(e) => {
-                              const updated = [...field.value]
-                              updated[index].amount = Number(e.target.value)
-                              field.onChange(updated)
+                              const updated = [...field.value];
+                              updated[index].amount = Number(e.target.value);
+                              field.onChange(updated);
                             }}
                             className="border border-black p-2 w-full bg-white text-black"
                             placeholder="Enter prize amount"
@@ -205,8 +206,8 @@ export default function CreateGigPage() {
                         <button
                           type="button"
                           onClick={() => {
-                            const updated = field.value.filter((_, i) => i !== index)
-                            field.onChange(updated)
+                            const updated = field.value.filter((_, i) => i !== index);
+                            field.onChange(updated);
                           }}
                           className="text-red-500 hover:text-red-700"
                         >
@@ -216,7 +217,9 @@ export default function CreateGigPage() {
                     ))}
                     <button
                       type="button"
-                      onClick={() => field.onChange([...(field.value || []), { place: field.value.length + 1, amount: 0 }])}
+                      onClick={() =>
+                        field.onChange([...(field.value || []), { place: field.value.length + 1, amount: 0 }])
+                      }
                       className="text-black border border-black px-4 py-2 hover:bg-gray-100"
                     >
                       Add Prize
@@ -240,7 +243,26 @@ export default function CreateGigPage() {
             {errors.skills_required && <p className="text-red-500 mt-1">{errors.skills_required.message}</p>}
           </div>
 
-          <button type="submit" className="w-full bg-black text-white py-2 px-4 hover:bg-gray-800">
+          {/* Checkbox */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="confirm"
+              checked={isChecked}
+              onChange={(e) => setIsChecked(e.target.checked)}
+              className="form-checkbox h-4 w-4 text-black border-black"
+            />
+            <label htmlFor="confirm" className="text-black">
+              Please review carefully, gig once created can't be deleted or updated
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!isChecked}
+            className={`w-full py-2 px-4 ${!isChecked ? 'bg-gray-400 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-800'}`}
+          >
             Create Gig
           </button>
 
@@ -249,5 +271,5 @@ export default function CreateGigPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }
