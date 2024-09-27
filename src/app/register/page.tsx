@@ -32,18 +32,26 @@ export default function Register() {
     const [checkingUsername, setCheckingUsername] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token');
     const router = useRouter();
-    let json: any;
-    if (token) {
-        json = JSON.parse(token);
-    }
-    const userRole = json?.user?.user_metadata?.role;
-    if (userRole === 'business') {
-        router.push('/dashboard');
-    } else if (userRole === 'freelancer') {
-        router.push('/');
-    }
+
+    useEffect(() => {
+      const checkUserRole = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          router.push('/login'); 
+          return;
+        }
+        const userRole = session.user?.user_metadata?.role;
+  
+        if (userRole === 'business') {
+          router.push('/dashboard');
+        } else if (userRole === 'freelancer') {
+          router.push('/');
+        }
+      };
+  
+      checkUserRole();
+    }, [router]);
 
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm({
         resolver: zodResolver(registerSchema),
