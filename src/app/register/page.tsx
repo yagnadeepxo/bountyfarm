@@ -37,8 +37,8 @@ export default function Register() {
     useEffect(() => {
       const checkUserRole = async () => {
         const { data: { session } } = await supabase.auth.getSession();
+        
         if (!session) {
-          router.push('/login'); 
           return;
         }
         const userRole = session.user?.user_metadata?.role;
