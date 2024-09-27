@@ -17,11 +17,18 @@ const GigsPage = () => {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token');
 
-  if (!token) {
-    router.push('/login');
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      }
+    };
+
+    checkSession();
+  }, [router]);
 
   useEffect(() => {
     const fetchGigs = async () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,22 +28,34 @@ const gigSchema = z.object({
   skills_required: z.string()
 });
 
-// Define the type for the form data
+
 type GigFormData = z.infer<typeof gigSchema>;
 
 export default function CreateGigPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isChecked, setIsChecked] = useState(false); // For checkbox state
+  const [businessId, setBusinessId] = useState<string | null>(null);
+  const [company, setCompany] = useState<string | null>(null);
 
-  const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token');
-  let json: any;
-  if (token) {
-    json = JSON.parse(token);
-  }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      
+      const { data: { session } } = await supabase.auth.getSession();
 
-  const businessId = json?.user?.id;
-  const company = json?.user?.user_metadata?.display_name;
+      if (session) {
+        
+        const user = session.user;
+        const userMetadata = user?.user_metadata;
+        
+        // Set the businessId and company (from user_metadata)
+        setBusinessId(user?.id || null);
+        setCompany(userMetadata?.display_name || null);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   if (!businessId || typeof businessId !== 'string') {
     setErrorMessage('Invalid business ID. Please log in again.');
