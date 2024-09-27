@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { supabase } from '@/lib/supabaseClient'; // Adjust path as needed
 import type { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
 import 'dotenv/config';
 require('dotenv').config();
 
