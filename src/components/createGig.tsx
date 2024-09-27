@@ -14,7 +14,7 @@ import 'react-quill/dist/quill.snow.css';
 const gigSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters long.'),
   description: z.string().min(10, 'Description must be at least 10 characters long.'),
-  type: z.enum(['project', 'bounty', 'grant'], { message: 'Please select a valid type.' }),
+  type: z.enum(['bounty', 'grant'], { message: 'Please select a valid type.' }),
   deadline: z.string(),
   total_bounty: z.number().min(1, { message: 'Bounty must be at least 1.' }),
   bounty_breakdown: z
@@ -145,7 +145,6 @@ export default function CreateGigPage() {
               className="border border-black p-2 w-full bg-white text-black"
             >
               <option value="">Select gig type</option>
-              <option value="project">Project</option>
               <option value="bounty">Bounty</option>
               <option value="grant">Grant</option>
             </select>

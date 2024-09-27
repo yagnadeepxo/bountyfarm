@@ -52,7 +52,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white p-4 shadow-md flex justify-center">
-      <ul className="flex space-x-4 font-mono">
+      <ul className="flex space-x-8 font-mono"> 
         {isLoggedIn ? (
           <>
             <li>
@@ -70,6 +70,11 @@ const Navbar = () => {
             <li>
               <a href={`/p/${username}`} className="text-black font-bold underline">
                 Profile
+              </a>
+            </li>
+            <li>
+              <a href={`/leaderboard`} className="text-black font-bold underline">
+                Leaderboard
               </a>
             </li>
             <li>

@@ -23,10 +23,20 @@ interface Gig {
   created_at: string
   updated_at: string
   business: string
+  type: string
+  winners_announced: boolean
 }
 
 interface BusinessProfile {
   avatar_url: string | null
+}
+
+interface Winner {
+  username: string
+  position: {
+    place: number
+    amount: number
+  }
 }
 
 export default function GigPage() {
@@ -43,6 +53,9 @@ export default function GigPage() {
   const [username, setUsername] = useState<string | null>(null)
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [isPastDeadline, setIsPastDeadline] = useState(false)
+  const [isSubmissionChecked, setIsSubmissionChecked] = useState(false) // Added state for checkbox
+  const [winners, setWinners] = useState<Winner[]>([])
+  const [winnersAnnounced, setWinnersAnnounced] = useState(false)
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 
@@ -51,6 +64,7 @@ export default function GigPage() {
       if (!gigId) return
       setLoading(true)
       try {
+        // Fetch the gig data
         const { data: gigData, error: gigError } = await supabase
           .from('gigs')
           .select('*')
@@ -65,6 +79,21 @@ export default function GigPage() {
           setIsPastDeadline(true)
         }
 
+        // Check if winners are announced
+        if (gigData.winners_announced) {
+          setWinnersAnnounced(true)
+
+          // Fetch winners
+          const { data: winnersData, error: winnersError } = await supabase
+            .from('winners')
+            .select('*')
+            .eq('gigid', gigId)
+
+          if (winnersError) throw winnersError
+          setWinners(winnersData)
+        }
+
+        // Fetch business profile
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('avatar_url')
@@ -194,19 +223,19 @@ export default function GigPage() {
                 <p className="text-gray-700 text-sm">{gig?.title}</p>
               </div>
             </div>
-  
+
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold text-black">Description</h3>
+                <h3 className="text-xl font-semibold text-black">Description</h3>
                 <div className="text-gray-700 text-sm">
-                  <ReactQuill value={gig.description} readOnly={true} theme="bubble" />
+                  <ReactQuill value={gig.description} readOnly={true} theme="bubble"/>
                 </div>
               </div>
-  
+
               <div className="flex justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-black">Deadline</h3>
-                  <p className="text-gray-700 text-sm">{gig.deadline}</p>
+                  <p className="text-gray-700 text-sm">{new Date(gig.deadline).toLocaleDateString()}</p>
                   {isPastDeadline && (
                     <p className="text-red-500 text-xs mt-1">The deadline for this gig has passed.</p>
                   )}
@@ -214,9 +243,11 @@ export default function GigPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-black">Total Bounty</h3>
                   <p className="text-gray-700 text-sm">${gig.total_bounty}</p>
+                  <br></br>
+                  <strong>type: {gig.type}</strong>
                 </div>
               </div>
-  
+
               <div>
                 <h3 className="text-lg font-semibold text-black">Bounty Breakdown</h3>
                 <ul className="list-disc list-inside text-gray-700 text-sm">
@@ -227,22 +258,36 @@ export default function GigPage() {
                   ))}
                 </ul>
               </div>
-  
+
               <div>
                 <h3 className="text-lg font-semibold text-black">Skills Required</h3>
                 <p className="text-gray-700 text-sm">{gig.skills_required}</p>
               </div>
-  
+
               <div className="flex justify-between text-xs text-gray-500">
                 <p>Created: {new Date(gig.created_at).toLocaleDateString()}</p>
-                <p>Updated: {new Date(gig.updated_at).toLocaleDateString()}</p>
               </div>
             </div>
-  
-            {role !== 'business' && !isPastDeadline && (
+
+            {/* Show winners if announced */}
+            {winnersAnnounced && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold text-black">Winners</h3>
+                <ul className="list-disc list-inside text-gray-700 text-sm">
+                  {winners.map((winner, index) => (
+                    <li key={index}>
+                      {winner.username}: Place {winner.position.place}, ${winner.position.amount}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Submission Button */}
+            {role !== 'business' && !isPastDeadline && !winnersAnnounced && (
               <div className="mt-4">
                 {hasSubmitted ? (
-                  <p className="text-green-500 text-sm">You have already submitted your work.</p>
+                  <p className="text-green-500 text-sm">You have submitted your work.</p>
                 ) : (
                   <button
                     className="w-full bg-black text-white px-4 py-2 rounded text-sm hover:bg-gray-800 transition-colors"
@@ -254,13 +299,13 @@ export default function GigPage() {
               </div>
             )}
           </div>
-  
+
           {/* Chat - Right Side */}
           <div className="w-1/2 ml-2">
             <Chat gigId={String(gigId)} />
           </div>
         </div>
-  
+
         <Modal
   isOpen={showModal}
   onRequestClose={() => setShowModal(false)}
@@ -291,10 +336,24 @@ export default function GigPage() {
       />
     </div>
 
+    <div className="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        id="submission-checkbox"
+        checked={isSubmissionChecked}
+        onChange={(e) => setIsSubmissionChecked(e.target.checked)}
+        className="form-checkbox h-5 w-5 text-gray-600 transition duration-150 ease-in-out"
+      />
+      <label htmlFor="submission-checkbox" className="block text-gray-800 sm:text-sm font-mono">
+        Review carefully, submission cannot be revoked or edited.
+      </label>
+    </div>
+
     <div className="flex justify-end space-x-4 mt-6">
       <button
         className="bg-black text-white px-6 py-3 rounded-md text-base font-medium hover:bg-gray-800 transition-colors font-mono"
         onClick={handleSubmit}
+        disabled={!isSubmissionChecked}
       >
         Submit
       </button>

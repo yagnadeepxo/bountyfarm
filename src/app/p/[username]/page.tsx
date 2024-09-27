@@ -90,7 +90,6 @@ export default function ProfilePage() {
                 <p className="text-black"><strong>About:</strong> {profile.about || 'N/A'}</p>
               </div>
               <div>
-                <strong className="text-black">Avatar:</strong>
                 <div className="mt-2">
                   <Image
                     src={profile.avatar_url ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_url}` : defaultAvatarUrl}

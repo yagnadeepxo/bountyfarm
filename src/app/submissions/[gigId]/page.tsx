@@ -98,6 +98,11 @@ export default function SubmissionsPage() {
         })
       }
 
+      const { error: updateError } = await supabase
+      .from('gigs')
+      .update({ winners_announced: true })
+      .eq('gigid', gigId);
+
       alert('Winners announced successfully!')
       setModalIsOpen(false)
       setWinnersAnnounced(true)
