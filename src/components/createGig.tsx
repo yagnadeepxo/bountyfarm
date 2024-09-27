@@ -28,27 +28,23 @@ const gigSchema = z.object({
   skills_required: z.string()
 });
 
-
 type GigFormData = z.infer<typeof gigSchema>;
 
 export default function CreateGigPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isChecked, setIsChecked] = useState(false); // For checkbox state
+  const [isChecked, setIsChecked] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [company, setCompany] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session) {
-        
         const user = session.user;
         const userMetadata = user?.user_metadata;
         
-        // Set the businessId and company (from user_metadata)
         setBusinessId(user?.id || null);
         setCompany(userMetadata?.display_name || null);
       }
@@ -56,11 +52,6 @@ export default function CreateGigPage() {
 
     fetchUserData();
   }, []);
-
-  if (!businessId || typeof businessId !== 'string') {
-    setErrorMessage('Invalid business ID. Please log in again.');
-    return null;
-  }
 
   const {
     register,
@@ -83,6 +74,11 @@ export default function CreateGigPage() {
 
     if (totalBreakdownAmount !== data.total_bounty) {
       setErrorMessage('Total breakdown amount must equal the total bounty.');
+      return;
+    }
+
+    if (!businessId || typeof businessId !== 'string') {
+      setErrorMessage('Invalid business ID. Please log in again.');
       return;
     }
 
@@ -112,6 +108,10 @@ export default function CreateGigPage() {
       setErrorMessage('Error creating gig: ' + error.message);
     }
   };
+
+  if (!businessId) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-mono p-4">
