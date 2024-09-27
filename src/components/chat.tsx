@@ -88,54 +88,52 @@ const Chat: React.FC<{ gigId: string }> = ({ gigId }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 font-mono p-4">
-      <div className="bg-white shadow-2xl rounded-lg max-w-lg w-full">
-        <h2 className="text-2xl font-bold mb-4 p-4 border-b border-black text-black">Chat</h2>
-        <div className="h-80 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg) => (
-            <div key={msg.id} className={`${msg.username === username ? 'text-right' : 'text-left'}`}>
-              <p className="text-sm text-gray-600">{msg.username}</p>
-              <div className="flex items-center justify-between">
-                <p
-                  className={`rounded-lg py-2 px-4 inline-block ${
-                    msg.username === username ? 'bg-black text-white' : 'bg-gray-200 text-black'
-                  }`}
+    <div className="bg-white shadow-2xl rounded-lg w-full h-full flex flex-col">
+      <h2 className="text-2xl font-bold p-4 border-b border-black text-black">Chat</h2>
+      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+        {messages.map((msg) => (
+          <div key={msg.id} className={`${msg.username === username ? 'text-right' : 'text-left'}`}>
+            <p className="text-xs text-gray-600 mb-1">{msg.username}</p>
+            <div className="flex items-center justify-between">
+              <p
+                className={`rounded-lg py-2 px-3 inline-block text-sm ${
+                  msg.username === username ? 'bg-black text-white' : 'bg-gray-200 text-black'
+                }`}
+              >
+                {msg.message}
+              </p>
+              {msg.username === username && (
+                <button
+                  onClick={() => deleteMessage(msg.id)}
+                  className="ml-2 text-black hover:text-gray-700 text-xs"
                 >
-                  {msg.message}
-                </p>
-                {msg.username === username && (
-                  <button
-                    onClick={() => deleteMessage(msg.id)}
-                    className="ml-2 text-black hover:text-gray-700"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
+                  Delete
+                </button>
+              )}
             </div>
-          ))}
-        </div>
-        <form onSubmit={sendMessage} className="p-4 border-t border-black">
-          {errorMessage && <p className="text-red-500 mb-2">{errorMessage}</p>}
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="w-full px-3 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white text-black"
-            maxLength={maxMessageLength}
-          />
-          <p className="text-sm text-gray-500 mt-1">
-            {newMessage.length}/{maxMessageLength} characters
-          </p>
-          <button
-            type="submit"
-            className="mt-2 w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-200"
-          >
-            Send
-          </button>
-        </form>
+          </div>
+        ))}
       </div>
+      <form onSubmit={sendMessage} className="p-4 border-t border-black">
+        {errorMessage && <p className="text-red-500 mb-2 text-xs">{errorMessage}</p>}
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Type a message..."
+          className="w-full px-3 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white text-black text-sm"
+          maxLength={maxMessageLength}
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          {newMessage.length}/{maxMessageLength} characters
+        </p>
+        <button
+          type="submit"
+          className="mt-2 w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-200 text-sm"
+        >
+          Send
+        </button>
+      </form>
     </div>
   )
 }
