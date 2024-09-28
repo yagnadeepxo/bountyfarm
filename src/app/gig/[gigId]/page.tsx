@@ -220,18 +220,18 @@ export default function GigPage() {
   return (
     <div className="min-h-screen bg-gray-100 font-mono p-4">
 
-      <Head>
-        <title>{gig.title} - Gig Details</title>
-        <meta name="description" content={gig.description} />
-        <meta property="og:title" content={gig.title} />
-        <meta property="og:description" content={gig.description} />
-        <meta property="og:image" content={`${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile?.avatar_url || 'default.jpg'}`} />
-        <meta property="og:url" content={`${window.location.href}`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={gig.title} />
-        <meta name="twitter:description" content={gig.description} />
-        <meta name="twitter:image" content={`${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile?.avatar_url || 'default.jpg'}`} />
-      </Head>
+    <Head>
+      <title>{gig.title} - Your App Name</title>
+      <meta name="description" content={gig.description} />
+      <meta property="og:title" content={gig.title} />
+      <meta property="og:description" content={gig.description} />
+      <meta property="og:image" content={`${supabaseUrl}/storage/v1/object/public/your-image-path`} />
+      <meta property="og:url" content={`https://gwei-beta.vercel.app/gigs/${gigId}`} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={gig.title} />
+      <meta name="twitter:description" content={gig.description} />
+      <meta name="twitter:image" content={`${supabaseUrl}/storage/v1/object/public/your-image-path`} />
+    </Head>
       
       <div className="max-w-full mx-auto h-screen flex flex-col">
         <h1 className="text-3xl font-bold mb-4 text-black text-center">Gig Details</h1>
