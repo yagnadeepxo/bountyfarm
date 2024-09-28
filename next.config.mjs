@@ -2,7 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['vldhwuxhpskjvcdbwrir.supabase.co'], // Add the Supabase storage domain here
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'vldhwuxhpskjvcdbwrir.supabase.co',
+      },
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,

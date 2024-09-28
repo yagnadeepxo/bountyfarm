@@ -25,7 +25,8 @@ const gigSchema = z.object({
       })
     )
     .nonempty('At least one prize is required.'),
-  skills_required: z.string()
+  skills_required: z.string(),
+  contact_info: z.string().min(5, 'Contact info must be at least 5 characters long.')
 });
 
 type GigFormData = z.infer<typeof gigSchema>;
@@ -95,7 +96,8 @@ export default function CreateGigPage() {
             deadline: data.deadline,
             total_bounty: data.total_bounty,
             bounty_breakdown: data.bounty_breakdown,
-            skills_required: data.skills_required
+            skills_required: data.skills_required,
+            contact_info: data.contact_info // Adding the contact info to the database
           }
         ])
         .select();
@@ -141,7 +143,7 @@ export default function CreateGigPage() {
                 <ReactQuill
                   {...field}
                   theme="snow"
-                  placeholder="Enter gig description"
+                  placeholder="Enter gig description, guidelines, resources, evaluation criteria, how/where are the prizes distributed"
                   className="bg-white text-black border-black"
                 />
               )}
@@ -252,6 +254,18 @@ export default function CreateGigPage() {
               placeholder="e.g., JavaScript, React, CSS"
             />
             {errors.skills_required && <p className="text-red-500 mt-1">{errors.skills_required.message}</p>}
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <label className="block mb-2 text-black">Contact Info:</label>
+            <input
+              type="text"
+              {...register('contact_info')}
+              className="border border-black p-2 w-full bg-white text-black"
+              placeholder="Contact info of the gig organiser" // New placeholder
+            />
+            {errors.contact_info && <p className="text-red-500 mt-1">{errors.contact_info.message}</p>}
           </div>
 
           {/* Checkbox */}

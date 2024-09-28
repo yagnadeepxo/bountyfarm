@@ -24,7 +24,8 @@ interface Gig {
   updated_at: string
   business: string
   type: string
-  winners_announced: boolean
+  winners_announced: boolean,
+  contact_info: string
 }
 
 interface BusinessProfile {
@@ -219,20 +220,15 @@ export default function GigPage() {
                 className="rounded-full mr-4"
               />
               <div>
-                <h2 className="text-xl font-semibold text-black">{gig?.company}</h2>
-                <p className="text-gray-700 text-sm">{gig?.title}</p>
+                <h2 className="text-xl font-semibold text-black">{gig?.title}</h2>
+                <p className="text-gray-700 text-sm">{gig?.company}</p>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-semibold text-black">Description</h3>
-                <div className="text-gray-700 text-sm">
-                  <ReactQuill value={gig.description} readOnly={true} theme="bubble"/>
-                </div>
-              </div>
-
+            <div className="space-y-6">
+              {/* First Row: Deadline and Bounty Information */}
               <div className="flex justify-between">
+                {/* Deadline */}
                 <div>
                   <h3 className="text-lg font-semibold text-black">Deadline</h3>
                   <p className="text-gray-700 text-sm">{new Date(gig.deadline).toLocaleDateString()}</p>
@@ -240,13 +236,30 @@ export default function GigPage() {
                     <p className="text-red-500 text-xs mt-1">The deadline for this gig has passed.</p>
                   )}
                 </div>
+
+                {/* Total Bounty */}
                 <div>
                   <h3 className="text-lg font-semibold text-black">Total Bounty</h3>
                   <p className="text-gray-700 text-sm">${gig.total_bounty}</p>
-                  <br></br>
-                  <strong>type: {gig.type}</strong>
+                  <br />
+                  <strong className="text-gray-700 text-sm">Type: {gig.type}</strong>
+                </div>
+
+                {/* Contact Information */}
+                <div>
+                  <h3 className="text-lg font-semibold text-black">Contact Info</h3>
+                  <p className="text-gray-700 text-sm">{gig.contact_info}</p>
                 </div>
               </div>
+
+              {/* Description Section */}
+              <div>
+                <h3 className="text-xl font-semibold text-black">Description</h3>
+                <div className="text-gray-700 text-sm">
+                  <ReactQuill value={gig.description} readOnly={true} theme="bubble" />
+                </div>
+              </div>
+
 
               <div>
                 <h3 className="text-lg font-semibold text-black">Bounty Breakdown</h3>
@@ -307,65 +320,65 @@ export default function GigPage() {
         </div>
 
         <Modal
-  isOpen={showModal}
-  onRequestClose={() => setShowModal(false)}
-  className="bg-white p-8 rounded-lg shadow-2xl max-w-2xl mx-auto mt-10 w-11/12"
-  overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
->
-  <h2 className="text-2xl font-semibold mb-6 text-black font-mono">Submit Your Work</h2>
-  <div className="space-y-6">
-    <div>
-      <label className="block text-gray-700 text-base mb-2 font-mono">Submission Link</label>
-      <input
-        type="text"
-        className="border border-black p-3 w-full text-base rounded-md font-mono"
-        placeholder="Link to your submission as specified in gig"
-        value={submissionLink}
-        onChange={(e) => setSubmissionLink(e.target.value)}
-      />
-    </div>
+          isOpen={showModal}
+          onRequestClose={() => setShowModal(false)}
+          className="bg-white p-8 rounded-lg shadow-2xl max-w-2xl mx-auto mt-10 w-11/12"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        >
+          <h2 className="text-2xl font-semibold mb-6 text-black font-mono">Submit Your Work</h2>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-gray-700 text-base mb-2 font-mono">Submission Link</label>
+              <input
+                type="text"
+                className="border border-black p-3 w-full text-base rounded-md font-mono"
+                placeholder="Link to your submission as specified in gig"
+                value={submissionLink}
+                onChange={(e) => setSubmissionLink(e.target.value)}
+              />
+            </div>
 
-    <div>
-      <label className="block text-gray-700 text-base mb-2 font-mono">Wallet Address</label>
-      <input
-        type="text"
-        className="border border-black p-3 w-full text-base rounded-md font-mono"
-        placeholder="Wallet address of the blockchain/L2 specified in the gig"
-        value={walletAddress}
-        onChange={(e) => setWalletAddress(e.target.value)}
-      />
-    </div>
+            <div>
+              <label className="block text-gray-700 text-base mb-2 font-mono">Wallet Address</label>
+              <input
+                type="text"
+                className="border border-black p-3 w-full text-base rounded-md font-mono"
+                placeholder="Wallet address of the blockchain/L2 specified in the gig"
+                value={walletAddress}
+                onChange={(e) => setWalletAddress(e.target.value)}
+              />
+            </div>
 
-    <div className="flex items-center space-x-2">
-      <input
-        type="checkbox"
-        id="submission-checkbox"
-        checked={isSubmissionChecked}
-        onChange={(e) => setIsSubmissionChecked(e.target.checked)}
-        className="form-checkbox h-5 w-5 text-gray-600 transition duration-150 ease-in-out"
-      />
-      <label htmlFor="submission-checkbox" className="block text-gray-800 sm:text-sm font-mono">
-        Review carefully, submission cannot be revoked or edited.
-      </label>
-    </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="submission-checkbox"
+                checked={isSubmissionChecked}
+                onChange={(e) => setIsSubmissionChecked(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-gray-600 transition duration-150 ease-in-out"
+              />
+              <label htmlFor="submission-checkbox" className="block text-gray-800 sm:text-sm font-mono">
+                Review carefully, submission cannot be revoked or edited.
+              </label>
+            </div>
 
-    <div className="flex justify-end space-x-4 mt-6">
-      <button
-        className="bg-black text-white px-6 py-3 rounded-md text-base font-medium hover:bg-gray-800 transition-colors font-mono"
-        onClick={handleSubmit}
-        disabled={!isSubmissionChecked}
-      >
-        Submit
-      </button>
-      <button
-        className="bg-gray-300 text-black px-6 py-3 rounded-md text-base font-medium hover:bg-gray-400 transition-colors font-mono"
-        onClick={() => setShowModal(false)}
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-</Modal>
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                className="bg-black text-white px-6 py-3 rounded-md text-base font-medium hover:bg-gray-800 transition-colors font-mono"
+                onClick={handleSubmit}
+                disabled={!isSubmissionChecked}
+              >
+                Submit
+              </button>
+              <button
+                className="bg-gray-300 text-black px-6 py-3 rounded-md text-base font-medium hover:bg-gray-400 transition-colors font-mono"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );
