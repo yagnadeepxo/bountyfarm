@@ -221,7 +221,7 @@ export default function GigPage() {
     <div className="min-h-screen bg-gray-100 font-mono p-4">
 
 <Head>
-  <title>{gig.title} - {gig.company} </title>
+  <title>{gig.title} - {gig.company}</title>
   <meta name="description" content={`${gig.description} - ${gig.company}`} />
   
   {/* Open Graph meta tags */}
@@ -237,8 +237,8 @@ export default function GigPage() {
   
   {/* Twitter Card meta tags */}
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@YourTwitterHandle" />
-  <meta name="twitter:creator" content="@YourTwitterHandle" />
+  <meta name="twitter:site" content="@bountyfarmxyz" />
+  <meta name="twitter:creator" content="@bountyfarmxyz" />
   <meta name="twitter:title" content={`${gig.title} - ${gig.company}`} />
   <meta name="twitter:description" content={`${gig.description} - ${gig.company}`} />
   <meta name="twitter:image" content={
@@ -247,6 +247,12 @@ export default function GigPage() {
       : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
   } />
   <meta name="twitter:image:alt" content={`${gig.company} logo`} />
+  <meta name="twitter:url" content={`https://gwei-beta.vercel.app/gig/${gigId}`} />
+  <meta name="twitter:domain" content="gwei-beta.vercel.app" />
+
+  {/* Additional meta tags */}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href={`https://gwei-beta.vercel.app/gig/${gigId}`} />
 </Head>
       
       <div className="max-w-full mx-auto h-screen flex flex-col">
