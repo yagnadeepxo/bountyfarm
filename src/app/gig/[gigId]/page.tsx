@@ -220,18 +220,34 @@ export default function GigPage() {
   return (
     <div className="min-h-screen bg-gray-100 font-mono p-4">
 
-    <Head>
-      <title>{gig.title} - Your App Name</title>
-      <meta name="description" content={gig.description} />
-      <meta property="og:title" content={gig.title} />
-      <meta property="og:description" content={gig.description} />
-      <meta property="og:image" content={`${supabaseUrl}/storage/v1/object/public/your-image-path`} />
-      <meta property="og:url" content={`https://gwei-beta.vercel.app/gigs/${gigId}`} />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={gig.title} />
-      <meta name="twitter:description" content={gig.description} />
-      <meta name="twitter:image" content={`${supabaseUrl}/storage/v1/object/public/your-image-path`} />
-    </Head>
+<Head>
+  <title>{gig.title} - {gig.company} </title>
+  <meta name="description" content={`${gig.description} - ${gig.company}`} />
+  
+  {/* Open Graph meta tags */}
+  <meta property="og:title" content={`${gig.title} - ${gig.company}`} />
+  <meta property="og:description" content={`${gig.description} - ${gig.company}`} />
+  <meta property="og:image" content={
+    businessProfile?.avatar_url
+      ? `${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile.avatar_url}`
+      : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
+  } />
+  <meta property="og:url" content={`https://gwei-beta.vercel.app/gigs/${gigId}`} />
+  <meta property="og:type" content="website" />
+  
+  {/* Twitter Card meta tags */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
+  <meta name="twitter:creator" content="@YourTwitterHandle" />
+  <meta name="twitter:title" content={`${gig.title} - ${gig.company}`} />
+  <meta name="twitter:description" content={`${gig.description} - ${gig.company}`} />
+  <meta name="twitter:image" content={
+    businessProfile?.avatar_url
+      ? `${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile.avatar_url}`
+      : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
+  } />
+  <meta name="twitter:image:alt" content={`${gig.company} logo`} />
+</Head>
       
       <div className="max-w-full mx-auto h-screen flex flex-col">
         <h1 className="text-3xl font-bold mb-4 text-black text-center">Gig Details</h1>
