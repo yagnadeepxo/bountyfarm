@@ -10,6 +10,7 @@ import Image from 'next/image'
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import 'react-quill/dist/quill.snow.css'
+import Head from 'next/head'
 
 interface Gig {
   gigid: string
@@ -113,46 +114,61 @@ export default function GigPage() {
   }, [gigId])
 
   useEffect(() => {
-    const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token')
-    if (token) {
-      const json = JSON.parse(token)
-      setRole(json?.user?.user_metadata?.role)
-      setUsername(json?.user?.user_metadata?.username)
-
-      const checkUserSubmission = async () => {
-        if (json?.user?.user_metadata?.username && gigId) {
+    const checkUserSubmission = async () => {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  
+      if (sessionError) {
+        console.error('Error getting session:', sessionError.message);
+        return;
+      }
+  
+      if (session) {
+        const username = session.user?.user_metadata?.username;
+        const role = session.user?.user_metadata?.role;
+        setRole(role);
+        setUsername(username);
+  
+        if (username && gigId) {
           const { data: submissions, error } = await supabase
             .from('submissions')
             .select('username')
             .eq('gigid', gigId)
-            .eq('username', json?.user?.user_metadata?.username)
-
+            .eq('username', username);
+  
           if (error) {
-            console.error('Error checking submissions:', error.message)
+            console.error('Error checking submissions:', error.message);
           }
-
+  
           if (submissions && submissions.length > 0) {
-            setHasSubmitted(true)
+            setHasSubmitted(true);
           }
         }
       }
-
-      checkUserSubmission()
-    }
-  }, [gigId])
+    };
+  
+    checkUserSubmission();
+  }, [gigId]);
+  
 
   const handleSubmit = async () => {
     if (!submissionLink || !walletAddress) {
-      alert('Please fill in all fields.')
-      return
+      alert('Please fill in all fields.');
+      return;
     }
-
+  
     try {
-      const token = localStorage.getItem('sb-vldhwuxhpskjvcdbwrir-auth-token')
-      if (!token) throw new Error('No authentication token found')
-      const json = JSON.parse(token)
-      const email = json.user?.user_metadata?.email
-
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  
+      if (sessionError) {
+        throw new Error('Failed to retrieve session: ' + sessionError.message);
+      }
+  
+      if (!session) {
+        throw new Error('No active session found');
+      }
+  
+      const email = session.user?.user_metadata?.email;
+  
       const { error } = await supabase.from('submissions').insert([
         {
           gigid: gigId,
@@ -160,21 +176,22 @@ export default function GigPage() {
           company_name: gig?.company,
           submission_link: submissionLink,
           wallet_address: walletAddress,
-          email: email
+          email: email,
         },
-      ])
-
+      ]);
+  
       if (error) {
-        throw error
+        throw error;
       }
-
-      alert('Submission successful!')
-      setShowModal(false)
-      setHasSubmitted(true)
+  
+      alert('Submission successful!');
+      setShowModal(false);
+      setHasSubmitted(true);
     } catch (err: any) {
-      alert('Failed to submit: ' + err.message)
+      alert('Failed to submit: ' + err.message);
     }
-  }
+  };
+  
 
   if (loading) {
     return (
@@ -202,6 +219,20 @@ export default function GigPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-mono p-4">
+
+      <Head>
+        <title>{gig.title} - Gig Details</title>
+        <meta name="description" content={gig.description} />
+        <meta property="og:title" content={gig.title} />
+        <meta property="og:description" content={gig.description} />
+        <meta property="og:image" content={`${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile?.avatar_url || 'default.jpg'}`} />
+        <meta property="og:url" content={`${window.location.href}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={gig.title} />
+        <meta name="twitter:description" content={gig.description} />
+        <meta name="twitter:image" content={`${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile?.avatar_url || 'default.jpg'}`} />
+      </Head>
+      
       <div className="max-w-full mx-auto h-screen flex flex-col">
         <h1 className="text-3xl font-bold mb-4 text-black text-center">Gig Details</h1>
         <div className="flex flex-grow overflow-hidden">
