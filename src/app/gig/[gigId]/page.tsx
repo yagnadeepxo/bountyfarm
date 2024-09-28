@@ -232,7 +232,7 @@ export default function GigPage() {
       ? `${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile.avatar_url}`
       : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
   } />
-  <meta property="og:url" content={`https://gwei-beta.vercel.app/gigs/${gigId}`} />
+  <meta property="og:url" content={`https://gwei-beta.vercel.app/gig/${gigId}`} />
   <meta property="og:type" content="website" />
   
   {/* Twitter Card meta tags */}
