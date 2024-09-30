@@ -37,6 +37,7 @@ export default function CreateGigPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [company, setCompany] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,6 +49,7 @@ export default function CreateGigPage() {
         
         setBusinessId(user?.id || null);
         setCompany(userMetadata?.display_name || null);
+        setUsername(userMetadata?.username || null);
       }
     };
 
@@ -97,7 +99,8 @@ export default function CreateGigPage() {
             total_bounty: data.total_bounty,
             bounty_breakdown: data.bounty_breakdown,
             skills_required: data.skills_required,
-            contact_info: data.contact_info // Adding the contact info to the database
+            contact_info: data.contact_info,
+            username: username
           }
         ])
         .select();

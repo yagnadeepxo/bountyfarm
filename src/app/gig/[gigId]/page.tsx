@@ -11,6 +11,7 @@ import Image from 'next/image'
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import 'react-quill/dist/quill.snow.css'
 import Head from 'next/head'
+import Link from 'next/link'
 
 interface Gig {
   gigid: string
@@ -26,7 +27,8 @@ interface Gig {
   business: string
   type: string
   winners_announced: boolean,
-  contact_info: string
+  contact_info: string,
+  username: string
 }
 
 interface BusinessProfile {
@@ -219,7 +221,7 @@ export default function GigPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-mono p-2 md:p-4">  
-    
+
     <Head>
         <title>{gig?.title || 'Gig Details'}</title>
         <meta name="description" content={gig?.description || 'Gig details on BountyFarm'} />
@@ -244,7 +246,7 @@ export default function GigPage() {
         <div className="flex flex-col md:flex-row flex-grow overflow-hidden">
           {/* Gig Details - Top on mobile, Left on desktop */}
           <div className="w-full md:w-1/2 bg-white shadow-2xl rounded-lg p-3 md:p-4 overflow-y-auto mb-4 md:mb-0 md:mr-2">
-            <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4">
               <Image
                 src={
                   businessProfile?.avatar_url
@@ -257,10 +259,13 @@ export default function GigPage() {
                 className="rounded-full mr-3 md:mr-4"
               />
               <div>
-                <h2 className="text-lg md:text-xl font-semibold text-black">{gig?.title}</h2>
-                <p className="text-gray-700 text-xs md:text-sm">{gig?.company}</p>
+                <p className="text-black font-bold text-lg">{gig?.company}</p>
+                <Link href={`/p/${gig?.username}`}>
+                  <p className="text-gray-600 text-sm hover:underline">@{gig?.username}</p>
+                </Link>
               </div>
             </div>
+            <h2 className="text-xl md:text-2xl font-semibold text-black mb-4">{gig?.title}</h2>
 
             <div className="space-y-4 md:space-y-6">
               {/* First Row: Deadline and Bounty Information */}

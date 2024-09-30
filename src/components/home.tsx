@@ -37,7 +37,8 @@ const GigsPage = () => {
           .from('gigs')
           .select(`
             gigid, 
-            company, 
+            company,
+            username, 
             title, 
             total_bounty, 
             deadline,
@@ -117,8 +118,7 @@ const GigsPage = () => {
     Bounty
   </button>
 </div>
-
-        {filteredGigs.length === 0 ? (
+{filteredGigs.length === 0 ? (
           <p className="text-black text-center">No gigs found.</p>
         ) : (
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
@@ -126,7 +126,7 @@ const GigsPage = () => {
               <li key={gig.gigid} className="bg-white shadow-lg rounded-lg p-6">
                 <Link href={`/gig/${gig.gigid}`} className="block">
                   <div className="cursor-pointer">
-                  <div className="flex items-center mb-4">
+                    <div className="flex items-start mb-4">
                       <Image
                         src={
                           gig.business?.avatar_url
@@ -134,20 +134,25 @@ const GigsPage = () => {
                             : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
                         }
                         alt="Company Avatar"
-                        width={40}
-                        height={40}
+                        width={48}
+                        height={48}
                         className="rounded-full mr-4"
                       />
+                      <div>
+                        <p className="text-black font-bold">{gig.company}</p>
+                        <Link href={`/p/${gig.username}`}>
+                          <p className="text-gray-600 text-sm hover:underline">@{gig.username}</p>
+                        </Link>
+                      </div>
                     </div>
-                    <p className="text-gray-600 font-medium mb-4">{gig.company}</p>
                     <h2 className="text-xl font-semibold text-black mb-4 truncate">
                       <span className="block overflow-hidden whitespace-nowrap text-ellipsis">
                         {gig.title}
                       </span>
                     </h2>
-                    <p className="text-black mb-4">
+                    <p className="text-black mb-2">
                       Due in: 
-                      <strong className="text-black font-bold">
+                      <strong className="text-black font-bold ml-1">
                         {calculateDueInDays(gig.deadline)}
                       </strong>
                     </p>
