@@ -218,7 +218,27 @@ export default function GigPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 font-mono p-2 md:p-4">      
+    <div className="min-h-screen bg-gray-100 font-mono p-2 md:p-4">  
+    
+    <Head>
+        <title>{gig?.title || 'Gig Details'}</title>
+        <meta name="description" content={gig?.description || 'Gig details on BountyFarm'} />
+        
+        {/* Open Graph / Twitter Card Metadata */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@bountyfarmxyz" />
+        <meta name="twitter:title" content={`${gig?.company}: ${gig?.title}`} />
+        <meta name="twitter:description" content={`Total Bounty: $${gig?.total_bounty} | Deadline: ${new Date(gig?.deadline).toLocaleDateString()}`} />
+        <meta name="twitter:image" content={`${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile?.avatar_url || 'bp.jpeg'}`} />
+        
+        <meta property="og:title" content={`${gig?.company}: ${gig?.title}`} />
+        <meta property="og:description" content={`Total Bounty: $${gig?.total_bounty} | Deadline: ${new Date(gig?.deadline).toLocaleDateString()}`} />
+        <meta property="og:image" content={`${supabaseUrl}/storage/v1/object/public/avatars/${businessProfile?.avatar_url || 'bp.jpeg'}`} />
+        <meta property="og:url" content={`https://bountyfarm.xyz/gig/${gigId}`} />
+        <meta property="og:type" content="website" />
+    </Head>
+
+
       <div className="max-w-full mx-auto min-h-screen flex flex-col">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 text-black text-center">Gig Details</h1>
         <div className="flex flex-col md:flex-row flex-grow overflow-hidden">
