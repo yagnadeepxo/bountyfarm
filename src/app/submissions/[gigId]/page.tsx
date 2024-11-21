@@ -89,6 +89,10 @@ export default function SubmissionsPage() {
   }, [gigId])
 
   const announceWinners = async () => {
+    if (!window.confirm("Please review carefully, winners once announced cannot be updated or deleted.")) {
+      return
+    }
+
     try {
       for (let winner of winners) {
         await supabase.from('winners').insert({
@@ -99,9 +103,9 @@ export default function SubmissionsPage() {
       }
 
       const { error: updateError } = await supabase
-      .from('gigs')
-      .update({ winners_announced: true })
-      .eq('gigid', gigId);
+        .from('gigs')
+        .update({ winners_announced: true })
+        .eq('gigid', gigId);
 
       alert('Winners announced successfully!')
       setModalIsOpen(false)
@@ -137,35 +141,36 @@ export default function SubmissionsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-mono p-4">
-      <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-lg p-8">
+      <div className="max-w-4xl mx-auto bg-white shadow-2xl rounded-lg p-6">
 
-        <div className="space-y-6">
+        {/* Container for grid layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {submissions.map((submission, index) => (
-            <div key={index} className="border border-black p-4 rounded-lg">
-              <p className="text-xl font-semibold text-black">Submission Link:</p>
+            <div key={index} className="border border-black p-2 rounded-lg">
+              <p className="text-lg font-semibold text-black">Submission Link:</p>
               <a href={submission.submission_link} className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">
                 {submission.submission_link}
               </a>
 
-              <p className="mt-4 text-xl font-semibold text-black">Username:</p>
+              <p className="mt-2 text-lg font-semibold text-black">Username:</p>
               <p className="text-gray-700">{submission.username}</p>
 
-              <p className="mt-4 text-xl font-semibold text-black">email:</p>
+              <p className="mt-2 text-lg font-semibold text-black">Email:</p>
               <p className="text-gray-700">{submission.email}</p>
 
-              <p className="mt-4 text-xl font-semibold text-black">Wallet Address:</p>
+              <p className="mt-2 text-lg font-semibold text-black">Wallet Address:</p>
               <p className="text-gray-700">{submission.wallet_address}</p>
             </div>
           ))}
         </div>
 
         {winnersAnnounced ? (
-          <div className="mt-8">
+          <div className="mt-6">
             <h2 className="text-2xl font-bold mb-4 text-black">Winners Announced</h2>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {winners.map((winner, index) => (
-                <div key={index} className="border border-black p-4 rounded-lg">
-                  <p className="text-xl font-semibold text-black">Place: {winner.position.place}</p>
+                <div key={index} className="border border-black p-2 rounded-lg">
+                  <p className="text-lg font-semibold text-black">Place: {winner.position.place}</p>
                   <p className="text-gray-700">Username: {winner.username}</p>
                   <p className="text-gray-700">Prize: ${winner.position.amount}</p>
                 </div>
@@ -173,7 +178,7 @@ export default function SubmissionsPage() {
             </div>
           </div>
         ) : (
-          <div className="mt-8">
+          <div className="mt-6">
             <button
               className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-200"
               onClick={() => setModalIsOpen(true)}
@@ -185,18 +190,18 @@ export default function SubmissionsPage() {
               isOpen={modalIsOpen}
               onRequestClose={() => setModalIsOpen(false)}
               contentLabel="Announce Winners Modal"
-              className="bg-white p-8 rounded-lg shadow-2xl max-w-md mx-auto mt-20"
+              className="bg-white p-6 rounded-lg shadow-2xl max-w-md mx-auto mt-20 overflow-y-auto max-h-[80vh]"
               overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
             >
-              <h2 className="text-2xl font-bold mb-6 text-black">Announce Winners</h2>
+              <h2 className="text-2xl font-bold mb-4 text-black">Announce Winners</h2>
 
               <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
                 {bountyBreakdown.map((prize, index) => (
                   <div key={index} className="space-y-2">
-                    <h3 className="text-xl font-semibold text-black">Place {prize.place}</h3>
+                    <h3 className="text-xl font-semibold text-black font-mono">Place {prize.place}</h3>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                      className="w-full px-3 py-2 border border-black rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 font-mono"
                       placeholder={`Enter username for place ${prize.place}`}
                       onChange={(e) => {
                         const updatedWinners = [...winners]
@@ -210,12 +215,23 @@ export default function SubmissionsPage() {
                         setWinners(updatedWinners)
                       }}
                     />
-                    <p className="text-gray-700">Prize: ${prize.amount}</p>
+                    <p className="text-gray-700 font-mono">Prize: ${prize.amount}</p>
                   </div>
                 ))}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="confirm-winners"
+                    required
+                    className="h-5 w-5 text-black"
+                  />
+                  <label htmlFor="confirm-winners" className="text-sm text-gray-700 font-mono">
+                    Please review the winners correctly, winners announced cannot be updated or deleted.
+                  </label>
+                </div>
 
                 <button
-                  className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-200"
+                  className="w-full bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-200 font-mono"
                   onClick={announceWinners}
                 >
                   Submit Winners

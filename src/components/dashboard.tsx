@@ -98,15 +98,12 @@ export default function Dashboard() {
         {gigs.length === 0 ? (
           <p className="text-black text-center">No gigs found for your company.</p>
         ) : (
-          <ul className="space-y-6">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {gigs.map((gig) => (
-              <li key={gig.gigid} className="bg-white shadow-2xl rounded-lg p-6 relative">
+              <li key={gig.gigid} className="bg-white shadow-lg rounded-lg p-4 relative">
                 <Link href={`/gig/${gig.gigid}`} className="block">
                   <div className="cursor-pointer">
-                    <h2 className="text-xl font-semibold text-black mb-2">{gig.title}</h2>
-                    <p className="text-gray-600 font-medium mb-4">Company: {gig.company}</p>
-
-                    <div className="flex items-center mb-4">
+                    <div className="flex items-center mb-2">
                       <Image
                         src={
                           gig.profiles?.avatar_url
@@ -116,17 +113,19 @@ export default function Dashboard() {
                         alt="Company Avatar"
                         width={48}
                         height={48}
-                        className="rounded-full mr-4"
+                        className="rounded-full mr-2"
                       />
                     </div>
-                    <p className="text-black mb-2">Deadline: {gig.deadline}</p>
+                    <p className="text-gray-600 font-medium mb-2">{gig.company}</p>
+                    <h2 className="text-lg font-semibold text-black mb-1">{gig.title}</h2>
+                    <p className="text-black mb-1">Deadline: {gig.deadline}</p>
                     <p className="text-black">Total Bounty: ${gig.total_bounty}</p>
                   </div>
                 </Link>
 
                 <Link
                   href={`/submissions/${gig.gigid}`}
-                  className="absolute bottom-4 right-4 text-black hover:underline font-bold"
+                  className="absolute bottom-2 right-2 text-black hover:underline font-bold"
                 >
                   View Submissions
                 </Link>

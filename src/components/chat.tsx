@@ -89,14 +89,14 @@ const Chat: React.FC<{ gigId: string }> = ({ gigId }) => {
 
   return (
     <div className="bg-white shadow-2xl rounded-lg w-full h-full flex flex-col">
-      <h2 className="text-2xl font-bold p-4 border-b border-black text-black">Chat</h2>
-      <div className="flex-grow overflow-y-auto p-4 space-y-4">
+      <h2 className="text-xl md:text-2xl font-bold p-3 md:p-4 border-b border-black text-black">Chat</h2>
+      <div className="flex-grow overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`${msg.username === username ? 'text-right' : 'text-left'}`}>
             <p className="text-xs text-gray-600 mb-1">{msg.username}</p>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap">
               <p
-                className={`rounded-lg py-2 px-3 inline-block text-sm ${
+                className={`rounded-lg py-2 px-3 inline-block text-xs md:text-sm max-w-[80%] break-words ${
                   msg.username === username ? 'bg-black text-white' : 'bg-gray-200 text-black'
                 }`}
               >
@@ -114,28 +114,30 @@ const Chat: React.FC<{ gigId: string }> = ({ gigId }) => {
           </div>
         ))}
       </div>
-      <form onSubmit={sendMessage} className="p-4 border-t border-black">
+      <form onSubmit={sendMessage} className="p-3 md:p-4 border-t border-black">
         {errorMessage && <p className="text-red-500 mb-2 text-xs">{errorMessage}</p>}
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
-          className="w-full px-3 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white text-black text-sm"
-          maxLength={maxMessageLength}
-        />
+        <div className="flex flex-col md:flex-row md:items-center">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type a message..."
+            className="w-full px-3 py-2 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white text-black text-sm mb-2 md:mb-0 md:mr-2"
+            maxLength={maxMessageLength}
+          />
+          <button
+            type="submit"
+            className="w-full md:w-auto bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-200 text-sm"
+          >
+            Send
+          </button>
+        </div>
         <p className="text-xs text-gray-500 mt-1">
           {newMessage.length}/{maxMessageLength} characters
         </p>
-        <button
-          type="submit"
-          className="mt-2 w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition duration-200 text-sm"
-        >
-          Send
-        </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
 export default Chat;

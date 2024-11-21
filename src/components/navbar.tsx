@@ -1,13 +1,16 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient'; // Adjust path as needed
+import Link from 'next/link'; // Import Link from Next.js
+import { supabase } from '@/lib/supabaseClient'; // Adjust the path as needed
 
 const Navbar = () => {
   const router = useRouter();
   const [username, setUsername] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [role, setRole] = useState<string | null>(null); // State to hold user role
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for toggling mobile menu
 
   useEffect(() => {
     // Fetch the current session and username from Supabase
@@ -51,31 +54,58 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white p-4 shadow-md flex justify-center">
-      <ul className="flex space-x-8 font-mono"> 
+    <nav className="bg-white p-4 shadow-md flex justify-between items-center">
+      {/* Left Section: Title */}
+      <h1 className="text-3xl font-extrabold text-black font-mono">Bounty Farm 💰</h1>
+
+      {/* Hamburger Icon for Mobile */}
+      <div className="sm:hidden">
+        <button
+          className="text-black focus:outline-none"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d={isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Right Section: Navigation Links */}
+      <ul className={`flex-col sm:flex-row sm:flex space-x-8 font-mono ${isMenuOpen ? 'flex' : 'hidden'} sm:flex`}>
         {isLoggedIn ? (
           <>
             <li>
-              <a href="/" className="text-black font-bold underline">
+              <Link href="/" className="text-black font-bold underline">
                 Home
-              </a>
+              </Link>
             </li>
             {role === 'business' && ( // Conditionally render Dashboard link
               <li>
-                <a href="/dashboard" className="text-black font-bold underline">
+                <Link href="/dashboard" className="text-black font-bold underline">
                   Dashboard
-                </a>
+                </Link>
               </li>
             )}
             <li>
-              <a href={`/p/${username}`} className="text-black font-bold underline">
+              <Link href={`/p/${username}`} className="text-black font-bold underline">
                 Profile
-              </a>
+              </Link>
             </li>
             <li>
-              <a href={`/leaderboard`} className="text-black font-bold underline">
+              <Link href="/leaderboard" className="text-black font-bold underline">
                 Leaderboard
-              </a>
+              </Link>
             </li>
             <li>
               <button onClick={handleLogout} className="text-black font-bold underline">
@@ -86,14 +116,14 @@ const Navbar = () => {
         ) : (
           <>
             <li>
-              <a href="/login" className="text-black font-bold underline">
+              <Link href="/login" className="text-black font-bold underline">
                 Login
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/register" className="text-black font-bold underline">
+              <Link href="/register" className="text-black font-bold underline">
                 Register
-              </a>
+              </Link>
             </li>
           </>
         )}

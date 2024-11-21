@@ -83,7 +83,7 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-gray-100 font-mono p-4">
       <div className="max-w-3xl mx-auto h-screen flex flex-col">
-        <h1 className="text-3xl font-bold mb-4 text-black text-center">Top Earners Leaderboard</h1>
+        <h1 className="text-3xl font-bold mb-4 text-black text-center">Top Farmers</h1>
         <div className="bg-white shadow-2xl rounded-lg p-4">
           <table className="table-auto w-full text-left">
             <thead>

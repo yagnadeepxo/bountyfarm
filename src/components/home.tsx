@@ -37,7 +37,8 @@ const GigsPage = () => {
           .from('gigs')
           .select(`
             gigid, 
-            company, 
+            company,
+            username, 
             title, 
             total_bounty, 
             deadline,
@@ -92,48 +93,40 @@ const GigsPage = () => {
 
         {/* Filter Buttons */}
         <div className="flex justify-center mb-6 space-x-4">
-          <button
-            onClick={() => setFilter('latest')}
-            className={`px-4 py-2 rounded-lg ${filter === 'latest' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Latest
-          </button>
-          <button
-            onClick={() => setFilter('oldest')}
-            className={`px-4 py-2 rounded-lg ${filter === 'oldest' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Oldest
-          </button>
-          <button
-            onClick={() => setFilter('grant')}
-            className={`px-4 py-2 rounded-lg ${filter === 'grant' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Grant
-          </button>
-          <button
-            onClick={() => setFilter('bounty')}
-            className={`px-4 py-2 rounded-lg ${filter === 'bounty' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Bounty
-          </button>
-        </div>
-
-        {filteredGigs.length === 0 ? (
-          <p className="text-black text-center">No gigs found for your company.</p>
+  <button
+    onClick={() => setFilter('latest')}
+    className={`px-4 py-2 rounded-lg ${filter === 'latest' ? 'bg-black text-white' : 'bg-gray text-black'}`}
+  >
+    Latest
+  </button>
+  <button
+    onClick={() => setFilter('oldest')}
+    className={`px-4 py-2 rounded-lg ${filter === 'oldest' ? 'bg-black text-white' : 'bg-gray text-black'}`}
+  >
+    Oldest
+  </button>
+  <button
+    onClick={() => setFilter('grant')}
+    className={`px-4 py-2 rounded-lg ${filter === 'grant' ? 'bg-black text-white' : 'bg-gray text-black'}`}
+  >
+    Grant
+  </button>
+  <button
+    onClick={() => setFilter('bounty')}
+    className={`px-4 py-2 rounded-lg ${filter === 'bounty' ? 'bg-black text-white' : 'bg-gray text-black'}`}
+  >
+    Bounty
+  </button>
+</div>
+{filteredGigs.length === 0 ? (
+          <p className="text-black text-center">No gigs found.</p>
         ) : (
           <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {filteredGigs.map((gig) => (
               <li key={gig.gigid} className="bg-white shadow-lg rounded-lg p-6">
                 <Link href={`/gig/${gig.gigid}`} className="block">
                   <div className="cursor-pointer">
-                    <h2 className="text-xl font-semibold text-black mb-4 truncate">
-                      <span className="block overflow-hidden whitespace-nowrap text-ellipsis">
-                        {gig.title}
-                      </span>
-                    </h2>
-                    <p className="text-gray-600 font-medium mb-4">Company: {gig.company}</p>
-
-                    <div className="flex items-center mb-4">
+                    <div className="flex items-start mb-4">
                       <Image
                         src={
                           gig.business?.avatar_url
@@ -141,15 +134,25 @@ const GigsPage = () => {
                             : `${supabaseUrl}/storage/v1/object/public/avatars/bp.jpeg`
                         }
                         alt="Company Avatar"
-                        width={40}
-                        height={40}
+                        width={48}
+                        height={48}
                         className="rounded-full mr-4"
                       />
+                      <div>
+                        <p className="text-black font-bold">{gig.company}</p>
+                        <Link href={`/p/${gig.username}`}>
+                          <p className="text-gray-600 text-sm hover:underline">@{gig.username}</p>
+                        </Link>
+                      </div>
                     </div>
-
-                    <p className="text-black mb-4">
+                    <h2 className="text-xl font-semibold text-black mb-4 truncate">
+                      <span className="block overflow-hidden whitespace-nowrap text-ellipsis">
+                        {gig.title}
+                      </span>
+                    </h2>
+                    <p className="text-black mb-2">
                       Due in: 
-                      <strong className="text-black font-bold">
+                      <strong className="text-black font-bold ml-1">
                         {calculateDueInDays(gig.deadline)}
                       </strong>
                     </p>
