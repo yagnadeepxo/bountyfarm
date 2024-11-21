@@ -70,7 +70,7 @@ const LoginPage = () => {
               <span className="inline-block animate-word">Freelancers:</span>{' '}
               <span className="inline-block animate-word">Contribute,</span>{' '}
               <span className="inline-block animate-word">Earn</span>{' '}
-              <span className="inline-block animate-word">Crypto!</span>
+              <span className="inline-block animate-word">USDe</span>
             </span>
           </span>
         </h1>
