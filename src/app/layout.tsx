@@ -17,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "earn crypto",
+  title: "earn USDe",
 
 };
 
