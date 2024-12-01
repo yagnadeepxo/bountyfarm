@@ -1,4 +1,4 @@
-## Bountyfarm 
+# [Bountyfarm](https://bountyfarm.xyz) 
 ##### [demo video](https://www.loom.com/share/339d63ade6c942ba9fbf0f7c4a00f1a6?sid=b5e64b0c-5685-48db-9fa4-bef5ad4ea49f)
 - bountyfarm is a social network platform where businesses can post micro-gigs/bounties and freelancers can submit the work and get rewarded in USDe.
 
